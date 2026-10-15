@@ -1,0 +1,19 @@
+
+> dev
+> next dev
+
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 13.4s
+ ○ Compiling / ...
+ ✓ Compiled / in 20.5s (687 modules)
+ GET / 200 in 2180ms
+ GET / 200 in 179ms
+ ○ Compiling /products ...
+ ✓ Compiled /products in 1062ms (682 modules)
+ ○ Compiling /products/[slug] ...
+ ✓ Compiled /products/[slug] in 750ms (695 modules)
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 540ms (701 modules)

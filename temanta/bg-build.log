@@ -1,0 +1,47 @@
+
+> build
+> next build
+
+  ▲ Next.js 14.2.15
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/18) ...
+   Generating static pages (4/18) 
+   Generating static pages (8/18) 
+   Generating static pages (13/18) 
+ ✓ Generating static pages (18/18)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    5.89 kB         183 kB
+├ ○ /_not-found                          873 B          88.5 kB
+├ ○ /account                             6.36 kB         177 kB
+├ ○ /admin                               4.33 kB         175 kB
+├ ƒ /api/orders                          0 B                0 B
+├ ○ /bandingkan                          5.61 kB         182 kB
+├ ○ /bantuan                             4.18 kB        98.6 kB
+├ ○ /cart                                4.27 kB         181 kB
+├ ○ /chat                                3.71 kB         171 kB
+├ ○ /checkout                            7 kB            187 kB
+├ ○ /lacak                               2.07 kB         178 kB
+├ ○ /login                               5.37 kB         166 kB
+├ ○ /notifications                       3.41 kB         170 kB
+├ ○ /orders                              4 kB            174 kB
+├ ƒ /orders/[id]                         5.32 kB         191 kB
+├ ○ /products                            5.75 kB         182 kB
+├ ƒ /products/[slug]                     4.17 kB         189 kB
+├ ƒ /toko                                748 B           186 kB
+└ ○ /wishlist                            4.84 kB         182 kB
++ First Load JS shared by all            87.6 kB
+  ├ chunks/117-0c36259871f6f78d.js       31.6 kB
+  ├ chunks/fd9d1056-b86486e03fb2a370.js  53.6 kB
+  └ other shared chunks (total)          2.42 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
