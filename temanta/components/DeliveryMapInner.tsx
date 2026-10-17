@@ -3,7 +3,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Polyline, Popup, ZoomControl, useMap } from "react-leaflet";
-import { ORIGIN, ORIGIN_LABEL, cityCoord, deliveryProgress, routeBetween, pointAt, haversineKm, bearingDeg, type LatLng } from "@/lib/geo";
+import { ORIGIN, ORIGIN_LABEL, cityCoord, deliveryProgress, routeBetween, roadRoute, pointAt, haversineKm, bearingDeg, type LatLng } from "@/lib/geo";
 import type { Order } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
 
@@ -123,7 +123,17 @@ export default function DeliveryMapInner({ order }: { order: Order }) {
   const tiles = isDark ? TILES.dark : TILES.light;
 
   const dest = useDestination(order);
-  const route = useMemo(() => routeBetween(ORIGIN, dest.coord, 96), [dest.coord]);
+  // Rute mengikuti jalan sebenarnya; rute lengkung dipakai sebagai tampilan awal/cadangan.
+  const [route, setRoute] = useState<LatLng[]>(() => routeBetween(ORIGIN, dest.coord, 96));
+  useEffect(() => {
+    let alive = true;
+    const ctrl = new AbortController();
+    setRoute(routeBetween(ORIGIN, dest.coord, 96));
+    roadRoute(ORIGIN, dest.coord, ctrl.signal)
+      .then((r) => { if (alive && r && r.length > 1) setRoute(r); })
+      .catch(() => { /* rute jalan gagal diambil, tetap pakai rute lengkung */ });
+    return () => { alive = false; ctrl.abort(); };
+  }, [dest.coord]);
 
   const delivered = order.status === "delivered";
   const canMove = order.status === "paid" || order.status === "processing" || order.status === "shipped";
@@ -201,7 +211,7 @@ export default function DeliveryMapInner({ order }: { order: Order }) {
           </Marker>
           {showTruck && <MovingTruck position={current} bearing={bearing} courier={`${order.courier} ${order.shippingMethod}`} icon={icons.movingIcon} />}
 
-          <FitBounds points={[ORIGIN, dest.coord]} boundsKey={`${dest.coord[0]},${dest.coord[1]}`} />
+          <FitBounds points={route} boundsKey={`${dest.coord[0]},${dest.coord[1]}:${route.length}`} />
         </MapContainer>
 
         {/* Kartu info mengambang di atas peta */}

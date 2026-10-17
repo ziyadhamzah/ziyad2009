@@ -107,27 +107,56 @@ export function deliveryProgress(o: Order): number {
   return Math.min(0.95, frac);
 }
 
-// Rute lengkung halus antara dua titik (bukan garis lurus).
-export function routeBetween(a: LatLng, b: LatLng, steps = 48): LatLng[] {
+// Rute berkelok halus antara dua titik, menyerupai jalan (bukan garis lurus).
+export function routeBetween(a: LatLng, b: LatLng, steps = 96): LatLng[] {
   const [aLat, aLng] = a;
   const [bLat, bLng] = b;
-  const mid: LatLng = [(aLat + bLat) / 2, (aLng + bLng) / 2];
   const dLat = bLat - aLat;
   const dLng = bLng - aLng;
   const dist = Math.hypot(dLat, dLng) || 1;
-  // Geser titik tengah tegak lurus agar rute terlihat melengkung seperti jalur.
-  const bow = dist * 0.18;
-  const ctrl: LatLng = [mid[0] + (-dLng / dist) * bow, mid[1] + (dLat / dist) * bow];
+  // Vektor satuan tegak lurus garis asal→tujuan (arah simpangan rute).
+  const nx = -dLng / dist;
+  const ny = dLat / dist;
+
   const out: LatLng[] = [];
   for (let i = 0; i <= steps; i++) {
     const t = i / steps;
-    const mt = 1 - t;
-    // Kurva kuadratik Bezier.
-    const lat = mt * mt * aLat + 2 * mt * t * ctrl[0] + t * t * bLat;
-    const lng = mt * mt * aLng + 2 * mt * t * ctrl[1] + t * t * bLng;
-    out.push([lat, lng]);
+    // Titik pada garis dasar asal→tujuan.
+    const baseLat = aLat + dLat * t;
+    const baseLng = aLng + dLng * t;
+    // Angka 0 di kedua ujung agar rute tetap menyentuh asal & tujuan.
+    const envelope = Math.sin(Math.PI * t);
+    // Busur utama + dua gelombang halus → belokan berkelok seperti jalan.
+    const offset =
+      dist * envelope * (0.17 + 0.06 * Math.sin(3 * Math.PI * t) + 0.028 * Math.sin(5 * Math.PI * t));
+    out.push([baseLat + nx * offset, baseLng + ny * offset]);
   }
   return out;
+}
+
+// Kurangi jumlah titik rute agar animasi tetap ringan tanpa mengubah bentuk.
+function downsample(points: LatLng[], max: number): LatLng[] {
+  if (points.length <= max) return points;
+  const step = (points.length - 1) / (max - 1);
+  const out: LatLng[] = [];
+  for (let i = 0; i < max - 1; i++) out.push(points[Math.round(i * step)]);
+  out.push(points[points.length - 1]);
+  return out;
+}
+
+// Rute mengikuti jalan sebenarnya (OSRM) agar seperti pelacakan kurir. null bila gagal.
+export async function roadRoute(a: LatLng, b: LatLng, signal?: AbortSignal): Promise<LatLng[] | null> {
+  const url =
+    `https://router.project-osrm.org/route/v1/driving/` +
+    `${a[1].toFixed(6)},${a[0].toFixed(6)};${b[1].toFixed(6)},${b[0].toFixed(6)}` +
+    `?overview=full&geometries=geojson`;
+  const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+  if (!res.ok) return null;
+  const data = (await res.json()) as { code?: string; routes?: { geometry?: { coordinates?: [number, number][] } }[] };
+  const coords = data.routes?.[0]?.geometry?.coordinates;
+  if (!coords || coords.length < 2) return null;
+  // OSRM memakai urutan [lng, lat]; ubah ke [lat, lng].
+  return downsample(coords.map(([lng, lat]) => [lat, lng] as LatLng), 400);
 }
 
 // Jarak lingkaran besar antara dua titik (km).
