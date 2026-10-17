@@ -9,7 +9,7 @@ export default function Stepper({ current }: { current: number }) {
           <li key={s} className="flex shrink-0 items-center gap-2">
             <span
               className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
-                active ? "bg-brand text-white shadow-sm" : done ? "bg-brand/15 text-brand" : "border border-line text-muted"
+                active ? "bg-brand text-white shadow-sm" : done ? "bg-brand/15 text-brand-ontint" : "border border-line text-muted"
               }`}
             >
               {done ? (
@@ -18,7 +18,7 @@ export default function Stepper({ current }: { current: number }) {
                 i + 1
               )}
             </span>
-            <span className={`whitespace-nowrap ${active ? "font-semibold text-brand" : done ? "text-ink" : "text-muted"}`}>{s}</span>
+            <span className={`whitespace-nowrap ${active ? "font-semibold text-brand-ontint" : done ? "text-ink" : "text-muted"}`}>{s}</span>
             {i < steps.length - 1 && <span className={`h-px w-6 sm:w-10 ${done ? "bg-brand/40" : "bg-line"}`} />}
           </li>
         );

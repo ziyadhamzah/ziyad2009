@@ -5,11 +5,11 @@ import ProductCard from "@/components/ProductCard";
 import StoreReviews from "@/components/StoreReviews";
 import FollowButton from "@/components/FollowButton";
 
-export const metadata = { title: `${store.name} Â· Temanta` };
+export const metadata = { title: `${store.name} · Temanta` };
 
 const tabs = [
   { key: "produk", label: "Produk" },
-  { key: "ulasan", label: "Penilaian" },
+  { key: "ulasan", label: "Ulasan" },
   { key: "tentang", label: "Tentang Toko" },
 ];
 
@@ -29,17 +29,17 @@ export default function StorePage({ searchParams }: { searchParams: { tab?: stri
           <span className="pointer-events-none absolute -right-6 -top-10 h-40 w-40 rounded-full bg-surface/10" />
           <span className="pointer-events-none absolute bottom-0 left-1/3 h-24 w-24 rounded-full bg-surface/10" />
           <div className="absolute bottom-4 left-4 flex items-center gap-3 text-white sm:left-6">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-surface text-brand shadow-sm sm:h-20 sm:w-20">
+            <span className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-surface text-brand-ontint shadow-sm sm:h-20 sm:w-20">
               <svg viewBox="0 0 24 24" className="h-7 w-7 sm:h-10 sm:w-10" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><path d="M3 6h18M16 10a4 4 0 0 1-8 0" /></svg>
             </span>
             <div>
-              <p className="flex items-center gap-1.5 text-lg font-bold sm:text-2xl">
+              <h1 className="flex items-center gap-1.5 text-lg font-bold sm:text-2xl">
                 {store.name}
                 {store.verified && (
                   <svg viewBox="0 0 24 24" className="h-5 w-5 text-white" fill="currentColor" aria-label="Terverifikasi"><path d="m12 2 2.4 1.8 3-.2 1 2.8 2.5 1.6-1 2.9 1 2.9-2.5 1.6-1 2.8-3-.2L12 22l-2.4-1.8-3 .2-1-2.8L3.1 16l1-2.9-1-2.9L5.6 8.6l1-2.8 3 .2z" /><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#ee4d2d" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 )}
-              </p>
-              <p className="text-xs text-white/90 sm:text-sm">{store.location} Â· Aktif {store.joined}</p>
+              </h1>
+              <p className="text-xs text-white/90 sm:text-sm">{store.location} · Aktif {store.joined}</p>
             </div>
             <FollowButton />
           </div>
@@ -57,7 +57,7 @@ export default function StorePage({ searchParams }: { searchParams: { tab?: stri
         <nav className="flex gap-1 overflow-x-auto px-4 py-1.5">
           {tabs.map((t) => (
             <Link key={t.key} href={`/toko?tab=${t.key}`}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm transition ${tab === t.key ? "bg-brand-light font-semibold text-brand" : "text-ink/70 hover:bg-paper hover:text-brand"}`}>
+              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm transition ${tab === t.key ? "bg-brand-light font-semibold text-brand-ontint" : "text-ink/70 hover:bg-paper hover:text-brand-ontint"}`}>
               {t.label}
             </Link>
           ))}

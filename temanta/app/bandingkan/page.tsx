@@ -19,7 +19,7 @@ export default function ComparePage() {
     stock: Math.max(...items.map((p) => p.stock)),
   };
 
-  if (!ready) return <p className="shell py-24 text-muted">Memuat perbandinganâ€¦</p>;
+  if (!ready) return <p className="shell py-24 text-muted">Memuat perbandingan…</p>;
 
   if (items.length < 2) {
     return (
@@ -39,11 +39,11 @@ export default function ComparePage() {
   return (
     <div className="shell py-8">
       <nav className="mb-3 text-sm text-muted">
-        <Link href="/" className="hover:text-brand">Beranda</Link> <span className="mx-1">â€º</span> <span className="text-ink">Bandingkan produk</span>
+        <Link href="/" className="hover:text-brand-ontint">Beranda</Link> <span className="mx-1">›</span> <span className="text-ink">Bandingkan produk</span>
       </nav>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Bandingkan produk</h1>
-        <button type="button" onClick={clear} className="text-sm text-muted underline hover:text-brand">Bersihkan semua</button>
+        <button type="button" onClick={clear} className="text-sm text-muted underline hover:text-brand-ontint">Bersihkan semua</button>
       </div>
       <p className="mt-1 text-sm text-muted">Membandingkan {items.length} produk. Sorotan hijau menandai nilai terbaik.</p>
 
@@ -51,9 +51,9 @@ export default function ComparePage() {
         <table className="w-full min-w-[680px] border-collapse text-sm">
           <thead>
             <tr>
-              <th className="sticky left-0 z-10 w-40 bg-surface p-3 text-left align-bottom text-xs font-semibold uppercase tracking-wide text-muted" />
+              <th scope="col" className="sticky left-0 z-10 w-40 bg-surface p-3 text-left align-bottom text-xs font-semibold uppercase tracking-wide text-muted"><span className="sr-only">Atribut</span></th>
               {items.map((p) => (
-                <th key={p.slug} className="w-[240px] min-w-[200px] border-l border-line p-3 text-left align-top">
+                <th key={p.slug} scope="col" className="w-[240px] min-w-[200px] border-l border-line p-3 text-left align-top">
                   <Card p={p} onRemove={() => remove(p.slug)} />
                 </th>
               ))}
@@ -63,21 +63,21 @@ export default function ComparePage() {
             <Row label="Harga">
               {items.map((p) => (
                 <Cell key={p.slug} isBest={p.price === best.price}>
-                  <span className="text-base font-extrabold text-brand">{rupiah(p.price)}</span>
+                  <span className="text-base font-extrabold text-brand-ontint">{rupiah(p.price)}</span>
                   {discountOf(p) > 0 && <span className="ml-2 text-xs text-muted line-through">{rupiah(p.basePrice)}</span>}
                 </Cell>
               ))}
             </Row>
             <Row label="Diskon">
               {items.map((p) => (
-                <Cell key={p.slug}>{discountOf(p) > 0 ? <span className="font-semibold text-brand">-{discountOf(p)}%</span> : <span className="text-muted">â€”</span>}</Cell>
+                <Cell key={p.slug}>{discountOf(p) > 0 ? <span className="font-semibold text-brand-ontint">-{discountOf(p)}%</span> : <span className="text-muted">—</span>}</Cell>
               ))}
             </Row>
             <Row label="Rating">
               {items.map((p) => (
                 <Cell key={p.slug} isBest={p.rating === best.rating}>
                   <span className="inline-flex items-center gap-1 font-semibold">
-                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-brand" fill="currentColor" aria-hidden><path d="m12 17.3-6.2 3.7 1.7-7L2 9.2l7.1-.6L12 2l2.9 6.6 7.1.6-5.5 4.8 1.7 7z" /></svg>
+                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-brand-ontint" fill="currentColor" aria-hidden><path d="m12 17.3-6.2 3.7 1.7-7L2 9.2l7.1-.6L12 2l2.9 6.6 7.1.6-5.5 4.8 1.7 7z" /></svg>
                     {p.rating.toFixed(1)}
                   </span>
                 </Cell>
@@ -89,19 +89,19 @@ export default function ComparePage() {
             <Row label="Stok">
               {items.map((p) => (
                 <Cell key={p.slug} isBest={p.stock === best.stock}>
-                  {p.stock === 0 ? <span className="font-medium text-red-600">Habis</span> : `${p.stock} unit`}
+                  {p.stock === 0 ? <span className="font-medium text-danger-fg">Habis</span> : `${p.stock} unit`}
                 </Cell>
               ))}
             </Row>
             <Row label="Kategori">{items.map((p) => <Cell key={p.slug}>{p.category}</Cell>)}</Row>
-            <Row label="Variasi">
+            <Row label="Varian">
               {items.map((p) => (
                 <Cell key={p.slug}>
                   {p.variants?.length ? (
                     <div className="flex flex-wrap gap-1">
                       {p.variants.map((v) => <span key={v.id} className="rounded-full border border-line px-2 py-0.5 text-xs">{v.label}</span>)}
                     </div>
-                  ) : <span className="text-muted">â€”</span>}
+                  ) : <span className="text-muted">—</span>}
                 </Cell>
               ))}
             </Row>
@@ -133,10 +133,10 @@ function Card({ p, onRemove }: { p: Product; onRemove: () => void }) {
     <div className="relative">
       <Link href={`/products/${p.slug}`} className="block">
         <div className="aspect-square overflow-hidden rounded-sm bg-paper"><ProductImage slug={p.slug} /></div>
-        <p className="mt-2 line-clamp-2 text-[13px] font-medium leading-snug text-ink hover:text-brand">{p.name}</p>
+        <p className="mt-2 line-clamp-2 text-[13px] font-medium leading-snug text-ink hover:text-brand-ontint">{p.name}</p>
       </Link>
       <button type="button" onClick={onRemove} aria-label={`Hapus ${p.name}`}
-        className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-ink text-white shadow-card transition hover:bg-brand">
+        className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-inverse text-inverse-fg shadow-card transition hover:bg-brand">
         <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden><path d="M18 6 6 18M6 6l12 12" /></svg>
       </button>
     </div>
@@ -146,7 +146,7 @@ function Card({ p, onRemove }: { p: Product; onRemove: () => void }) {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <tr className="border-t border-line">
-      <th scope="row" className="sticky left-0 z-10 bg-surface p-3 text-left align-top text-xs font-medium text-muted">{label}</th>
+      <th scope="row" className="sticky left-0 z-10 bg-surface p-3 text-left align-top text-xs font-medium text-muted">{label || <span className="sr-only">Aksi</span>}</th>
       {children}
     </tr>
   );
@@ -157,7 +157,7 @@ function Cell({ isBest, children }: { isBest?: boolean; children: React.ReactNod
     <td className={`border-l border-line p-3 align-top ${isBest ? "bg-brand-light/60" : ""}`}>
       <div className="flex items-center gap-1">
         {isBest && (
-          <span title="Terbaik" className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-brand text-white">
+          <span title="Terbaik" aria-label="Nilai terbaik" className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-brand text-white">
             <svg viewBox="0 0 24 24" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m5 12 5 5L20 7" /></svg>
           </span>
         )}

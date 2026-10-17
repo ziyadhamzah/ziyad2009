@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import CatalogClient from "./CatalogClient";
 
-export const metadata: Metadata = { title: "Katalog Produk Â· Temanta" };
+export const metadata: Metadata = { title: "Katalog Produk · Temanta", description: "Katalog lengkap perlengkapan rumah dari pengrajin Indonesia." };
 
 function Skeleton() {
   return (

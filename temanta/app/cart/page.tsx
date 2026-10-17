@@ -22,6 +22,9 @@ export default function CartPage() {
   const { lines, subtotal, setQty, remove, selected, toggleSel, selectAll, selectedLines, selectedSubtotal } = useCart();
   const shipping = shippingCost("reguler", selectedSubtotal);
   const allOn = lines.length > 0 && selected.length === lines.length;
+  const freeShip = selectedSubtotal >= FREE_SHIPPING_FROM;
+  const toFreeShip = Math.max(0, FREE_SHIPPING_FROM - selectedSubtotal);
+  const freePct = Math.min(100, Math.round((selectedSubtotal / FREE_SHIPPING_FROM) * 100));
 
   if (!lines.length)
     return (
@@ -52,11 +55,11 @@ export default function CartPage() {
 
         <div className="flex items-center gap-3 border-b border-line bg-paper px-4 py-2.5 text-sm">
           <Check on={allOn} onClick={() => selectAll(!allOn)} label="Pilih semua" />
-          <Link href="/toko" className="flex items-center gap-2 font-medium hover:text-brand">
-            <svg viewBox="0 0 24 24" className="h-4 w-4 text-brand" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 9 4.5 4h15L21 9M4 9h16v11H4z" /></svg>
+          <Link href="/toko" className="flex items-center gap-2 font-medium hover:text-brand-ontint">
+            <svg viewBox="0 0 24 24" className="h-4 w-4 text-brand-ontint" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 9 4.5 4h15L21 9M4 9h16v11H4z" /></svg>
             {store.name}
           </Link>
-          <Link href="/chat" className="ml-auto rounded-sm border border-brand px-2 py-0.5 text-xs text-brand transition-colors hover:bg-brand hover:text-white">Chat</Link>
+          <Link href="/chat" className="ml-auto rounded-sm border border-brand px-2 py-0.5 text-xs text-brand-ontint transition-colors hover:bg-brand hover:text-white">Chat</Link>
         </div>
 
         <ul className="divide-y divide-line">
@@ -74,9 +77,9 @@ export default function CartPage() {
                     <ProductImage slug={l.slug} />
                   </Link>
                   <div className="min-w-0">
-                    <Link href={`/products/${l.slug}`} className="line-clamp-2 text-sm hover:text-brand">{l.name}</Link>
+                    <Link href={`/products/${l.slug}`} className="line-clamp-2 text-sm hover:text-brand-ontint">{l.name}</Link>
                     {l.variant && <p className="mt-0.5 text-xs text-muted">Variasi: {l.variant}</p>}
-                    <button onClick={() => remove(l.key)} className="mt-1 text-xs text-muted underline hover:text-brand">Hapus</button>
+                    <button onClick={() => remove(l.key)} className="mt-1 text-xs text-muted underline hover:text-brand-ontint">Hapus</button>
                   </div>
                 </div>
 
@@ -90,7 +93,7 @@ export default function CartPage() {
 
                 <div className="flex items-center gap-3 pl-8 sm:pl-0">
                   <div className="flex items-center rounded-sm border border-line text-sm">
-                    <button aria-label="Kurangi" className="h-8 w-8 text-ink/70 hover:bg-paper disabled:opacity-40" disabled={l.qty <= 1} onClick={() => setQty(l.key, l.qty - 1)}>âˆ’</button>
+                    <button aria-label="Kurangi" className="h-8 w-8 text-ink/70 hover:bg-paper disabled:opacity-40" disabled={l.qty <= 1} onClick={() => setQty(l.key, l.qty - 1)}>−</button>
                     <span className="w-8 text-center">{l.qty}</span>
                     <button aria-label="Tambah" className="h-8 w-8 text-ink/70 hover:bg-paper disabled:opacity-40" disabled={stock > 0 && l.qty >= stock} onClick={() => setQty(l.key, l.qty + 1)}>+</button>
                   </div>
@@ -98,17 +101,44 @@ export default function CartPage() {
                 </div>
 
                 <div className="flex flex-col pl-8 sm:pl-0 sm:items-end sm:text-right">
-                  <span className="font-semibold text-brand">{rupiah(l.price * l.qty)}</span>
-                  {off > 0 && <span className="text-xs text-brand">Diskon {off}%</span>}
+                  <span className="font-semibold text-brand-ontint">{rupiah(l.price * l.qty)}</span>
+                  {off > 0 && <span className="text-xs text-brand-ontint">Diskon {off}%</span>}
                 </div>
               </li>
             );
           })}
         </ul>
 
-        <div className="flex flex-col gap-3 border-t border-line bg-paper px-4 py-3 sm:flex-row sm:items-center">
-          <p className="text-sm text-muted">Gratis ongkir reguler otomatis untuk belanja di atas {rupiah(FREE_SHIPPING_FROM)}</p>
-          <span className="rounded-sm border border-brand px-3 py-1 text-xs font-medium text-brand sm:ml-auto">Gratis ongkir â‰¥ {rupiah(FREE_SHIPPING_FROM)}</span>
+        <div className="border-t border-line bg-paper px-4 py-3.5">
+          {freeShip ? (
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ok-bg text-ok-fg">
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m5 13 4 4L19 7" /></svg>
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-ok-fg">Selamat! Kamu dapat gratis ongkir reguler</p>
+                <p className="text-xs text-muted">Otomatis berlaku ke seluruh Indonesia, tanpa kode.</p>
+              </div>
+              <span className="ml-auto hidden rounded-full bg-ok-bg px-3 py-1 text-xs font-semibold text-ok-fg sm:inline-block">Gratis ongkir</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-light text-brand-ontint">
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M1 3h13v13H1zM14 8h4l3 3v5h-7z" /><circle cx="5.5" cy="18.5" r="1.8" /><circle cx="17.5" cy="18.5" r="1.8" /></svg>
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm text-ink">
+                  Tambah <span className="font-semibold text-brand-ontint">{rupiah(toFreeShip)}</span> lagi untuk <span className="font-semibold">gratis ongkir</span>
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="h-2 flex-1 overflow-hidden rounded-full bg-line">
+                    <span className="block h-full rounded-full bg-gradient-to-r from-brand to-brand-deep transition-[width] duration-500" style={{ width: `${freePct}%` }} />
+                  </span>
+                  <span className="shrink-0 text-xs font-semibold tabular-nums text-brand-ontint">{freePct}%</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -118,13 +148,13 @@ export default function CartPage() {
           <span className="text-sm text-muted">Pilih semua ({lines.length})</span>
         </div>
         <div className="flex flex-col gap-1 sm:text-right">
-          <p className="text-sm text-muted">Total ({selectedLines.length} produk): <span className="font-bold text-brand">{rupiah(selectedSubtotal + shipping)}</span></p>
-          <p className="text-xs text-muted">{shipping ? `Termasuk ongkir ${rupiah(shipping)}` : "Ongkir gratis"}</p>
+          <p className="text-sm text-muted">Total ({selectedLines.length} produk): <span className="font-bold text-brand-ontint">{rupiah(selectedSubtotal + shipping)}</span></p>
+          <p className="text-xs text-muted">{shipping ? `Termasuk ongkir ${rupiah(shipping)}` : "Gratis ongkir"}</p>
         </div>
         <button disabled={!selectedLines.length}
           onClick={() => router.push("/checkout")}
           className="rounded-sm bg-brand px-8 py-3 text-center font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-40">
-          Checkout ({selectedLines.length})
+          Lanjut ke pembayaran ({selectedLines.length})
         </button>
       </div>
     </div>

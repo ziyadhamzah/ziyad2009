@@ -8,7 +8,7 @@ type Slide = { slug: string; title: string; text: string; cta: string; href: str
 const slides: Slide[] = [
   { slug: "panci-besi-cor-24cm", title: "Masak lebih enak dengan peralatan besi cor", text: "Besi cor, kayu jati, dan keramik buatan pengrajin Indonesia. Tahan lama dan siap dipakai tiap hari.", cta: "Belanja kategori dapur", href: "/products?kategori=Dapur" },
   { slug: "vas-terakota-tinggi", title: "Percantik ruangan dengan terakota & keramik", text: "Setiap vas dibentuk dan dibakar manual oleh perajin lokal, jadi tiap unitnya unik.", cta: "Lihat dekorasi", href: "/products?kategori=Dekorasi" },
-  { slug: "taplak-meja-batik-tulis", title: "Batik tulis Pekalongan, dikerjakan dua minggu", text: "Katun primisima ukuran 140Ã—200 cm, halus dipakai dan tahan lama di meja makan.", cta: "Lihat tekstil", href: "/products?kategori=Tekstil" },
+  { slug: "taplak-meja-batik-tulis", title: "Batik tulis Pekalongan, dikerjakan dua minggu", text: "Katun primissima ukuran 140×200 cm, halus dipakai dan tahan lama di meja makan.", cta: "Lihat tekstil", href: "/products?kategori=Tekstil" },
 ];
 
 const heroStyle = `
@@ -23,42 +23,57 @@ const heroStyle = `
 
 export default function HeroSlider() {
   const [i, setI] = useState(0);
+  const [playing, setPlaying] = useState(true);
   const startX = useRef<number | null>(null);
-  const paused = useRef(false);
+  const hoverPause = useRef(false);
+  const focusPause = useRef(false);
   const count = slides.length;
 
   const go = (n: number) => setI((p) => (p + n + count) % count);
 
+  // Hormati pengaturan pengguna yang mengurangi gerakan.
   useEffect(() => {
-    const id = setInterval(() => { if (!paused.current) setI((p) => (p + 1) % count); }, 6500);
-    return () => clearInterval(id);
-  }, [count]);
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setPlaying(false);
+    }
+  }, []);
 
-  const down = (x: number) => { startX.current = x; paused.current = true; };
+  useEffect(() => {
+    if (!playing) return;
+    const id = setInterval(() => {
+      if (!hoverPause.current && !focusPause.current) setI((p) => (p + 1) % count);
+    }, 6500);
+    return () => clearInterval(id);
+  }, [count, playing]);
+
+  const down = (x: number) => { startX.current = x; };
   const up = (x: number) => {
     if (startX.current !== null && Math.abs(x - startX.current) > 40) go(x < startX.current ? 1 : -1);
     startX.current = null;
-    paused.current = false;
   };
 
   return (
     <>
       <style>{heroStyle}</style>
-      <section className="relative w-full bg-ink">
+      <section
+        className="relative w-full bg-inverse"
+        onMouseEnter={() => { hoverPause.current = true; }}
+        onMouseLeave={() => { hoverPause.current = false; }}
+        onFocusCapture={() => { focusPause.current = true; }}
+        onBlurCapture={() => { focusPause.current = false; }}
+        aria-roledescription="carousel"
+        aria-label="Sorotan produk"
+      >
         <div
           className="relative overflow-hidden"
-          onMouseEnter={() => { paused.current = true; }}
-          onMouseLeave={() => { paused.current = false; }}
           onTouchStart={(e) => down(e.touches[0].clientX)}
           onTouchEnd={(e) => up(e.changedTouches[0].clientX)}
           onPointerDown={(e) => { if (e.pointerType === "mouse") down(e.clientX); }}
           onPointerUp={(e) => { if (e.pointerType === "mouse") up(e.clientX); }}
-          aria-roledescription="carousel"
-          aria-label="Sorotan produk"
         >
-          <div className="flex transition-transform duration-700 ease-out" style={{ transform: `translateX(-${i * 100}%)` }}>
-            {slides.map((s) => (
-              <div key={s.slug} className="relative min-w-full">
+          <div className="flex transition-transform duration-700 ease-out motion-reduce:transition-none" style={{ transform: `translateX(-${i * 100}%)` }}>
+            {slides.map((s, n) => (
+              <div key={s.slug} className="relative min-w-full" aria-hidden={n !== i}>
                 <div className="relative h-[440px] sm:h-[520px] lg:h-[600px]">
                   <div className="absolute inset-0"><ProductImage slug={s.slug} /></div>
                   <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/10" />
@@ -67,7 +82,11 @@ export default function HeroSlider() {
                   <div className="relative z-10 flex h-full items-center">
                     <div className="shell">
                       <div key={i} className="animate-hero max-w-xl">
-                        <h1 className="text-3xl font-black leading-[1.1] text-white sm:text-4xl lg:text-[50px]">{s.title}</h1>
+                        {n === 0 ? (
+                          <h1 className="text-3xl font-black leading-[1.1] text-white sm:text-4xl lg:text-[50px]">{s.title}</h1>
+                        ) : (
+                          <p className="text-3xl font-black leading-[1.1] text-white sm:text-4xl lg:text-[50px]">{s.title}</p>
+                        )}
                         <p className="mt-4 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">{s.text}</p>
                         <div className="mt-8 flex flex-wrap items-center gap-3">
                           <Link href={s.href} className="btn-primary h-12 px-7 text-sm">{s.cta}</Link>
@@ -91,9 +110,19 @@ export default function HeroSlider() {
           </button>
 
           <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/30 px-3 py-2 ring-1 ring-white/10 backdrop-blur">
+            <button type="button" onClick={() => setPlaying((p) => !p)} aria-label={playing ? "Jeda sorotan otomatis" : "Putar sorotan otomatis"}
+              className="flex h-6 w-6 items-center justify-center rounded-full text-white transition-colors hover:bg-surface/20">
+              {playing ? (
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden><path d="M8 5v14l11-7z" /></svg>
+              )}
+            </button>
             {slides.map((s, n) => (
-              <button key={s.slug} type="button" onClick={() => setI(n)} aria-label={`Ke slide ${n + 1}`}
-                className={`h-1.5 rounded-full transition-all ${n === i ? "w-6 bg-surface" : "w-1.5 bg-surface/50 hover:bg-surface/80"}`} />
+              <button key={s.slug} type="button" onClick={() => setI(n)} aria-label={`Ke slide ${n + 1}`} aria-current={n === i}
+                className="group/dot flex h-6 items-center px-0.5">
+                <span className={`h-1.5 rounded-full transition-all ${n === i ? "w-6 bg-surface" : "w-1.5 bg-surface/50 group-hover/dot:bg-surface/80"}`} />
+              </button>
             ))}
           </div>
         </div>

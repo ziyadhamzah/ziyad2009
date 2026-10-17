@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   categories, priceBounds, products, queryProducts, sortOptions, suggestProducts,
@@ -19,6 +19,13 @@ const RATINGS = [
   { v: 4, label: "4 bintang ke atas" },
   { v: 3, label: "3 bintang ke atas" },
 ];
+const PRICE_PRESETS = [
+  { label: "Di bawah Rp150rb", min: "", max: "150000" },
+  { label: "Rp150rb – 250rb", min: "150000", max: "250000" },
+  { label: "Rp250rb – 400rb", min: "250000", max: "400000" },
+  { label: "Di atas Rp400rb", min: "400000", max: "" },
+];
+const fmtNum = (s: string) => s.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 export default function CatalogClient() {
   const router = useRouter();
@@ -38,7 +45,9 @@ export default function CatalogClient() {
   const [minP, setMinP] = useState(minPrice != null ? String(minPrice) : "");
   const [maxP, setMaxP] = useState(maxPrice != null ? String(maxPrice) : "");
   const [suggestOpen, setSuggestOpen] = useState(false);
+  const [suggestIndex, setSuggestIndex] = useState(-1);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { setTerm(q); }, [q]);
   useEffect(() => {
@@ -70,6 +79,18 @@ export default function CatalogClient() {
 
   const suggestions = useMemo(() => (term.trim() ? suggestProducts(term) : []), [term]);
 
+  const openSuggest = () => { if (blurTimer.current) clearTimeout(blurTimer.current); setSuggestOpen(true); };
+  const closeSuggestSoon = () => { if (blurTimer.current) clearTimeout(blurTimer.current); blurTimer.current = setTimeout(() => { setSuggestOpen(false); setSuggestIndex(-1); }, 150); };
+  useEffect(() => () => { if (blurTimer.current) clearTimeout(blurTimer.current); }, []);
+
+  const onSuggestKey = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") { setSuggestOpen(false); setSuggestIndex(-1); return; }
+    if (!suggestOpen || !suggestions.length) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); setSuggestIndex((i) => (i + 1) % suggestions.length); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setSuggestIndex((i) => (i - 1 + suggestions.length) % suggestions.length); }
+    else if (e.key === "Enter" && suggestIndex >= 0) { e.preventDefault(); router.push(`/products/${suggestions[suggestIndex].slug}`); setSuggestOpen(false); setSuggestIndex(-1); }
+  };
+
   const hasFilter = Boolean(q || kategori || minPrice != null || maxPrice != null || minRating != null || (sort && sort !== "relevan"));
   const resetFilter = () => { setTerm(""); setMinP(""); setMaxP(""); startTransition(() => router.replace(pathname, { scroll: false })); };
 
@@ -78,6 +99,12 @@ export default function CatalogClient() {
     const min = minP.trim() ? String(Math.max(0, Number(minP) || 0)) : undefined;
     const max = maxP.trim() ? String(Math.max(0, Number(maxP) || 0)) : undefined;
     update({ min, max });
+  };
+
+  const applyPreset = (p: { min: string; max: string }) => {
+    setMinP(p.min);
+    setMaxP(p.max);
+    update({ min: p.min || undefined, max: p.max || undefined });
   };
 
   const pageHref = (n: number) => {
@@ -91,35 +118,38 @@ export default function CatalogClient() {
     <div className="mx-auto max-w-6xl px-4 py-4">
       <div className="rounded-sm bg-surface p-4 shadow-card">
         <p className="text-sm text-muted">
-          <Link href="/" className="hover:text-brand">Beranda</Link> &nbsp;/&nbsp; {kategori ?? (q ? `Hasil pencarian â€œ${q}â€` : "Semua produk")}
+          <Link href="/" className="hover:text-brand-ontint">Beranda</Link> &nbsp;/&nbsp; {kategori ?? (q ? `Hasil pencarian “${q}”` : "Semua produk")}
         </p>
-        <h1 className="mt-2 text-xl font-bold">{q ? `Hasil untuk â€œ${q}â€` : kategori ?? "Semua produk"}</h1>
+        <h1 className="mt-2 text-xl font-bold">{q ? `Hasil untuk “${q}”` : kategori ?? "Semua produk"}</h1>
 
         {/* Search + autocomplete */}
-        <form action="/products" className="relative mt-4 flex overflow-hidden rounded-sm border border-line" onSubmit={(e) => { e.preventDefault(); setSuggestOpen(false); update({ q: term }); }}>
+        <form action="/products" className="relative mt-4 flex rounded-sm border border-line" onSubmit={(e) => { e.preventDefault(); setSuggestOpen(false); update({ q: term }); }}>
           {kategori && <input type="hidden" name="kategori" value={kategori} />}
           <input
             name="q" type="search" value={term}
-            onChange={(e) => { setTerm(e.target.value); setSuggestOpen(true); }}
-            onFocus={() => setSuggestOpen(true)}
-            onBlur={() => setTimeout(() => setSuggestOpen(false), 150)}
-            placeholder="Cari produk di katalogâ€¦" aria-label="Cari produk" autoComplete="off"
-            className="h-10 min-w-0 flex-1 px-3 text-sm outline-none placeholder:text-muted"
+            onChange={(e) => { setTerm(e.target.value); setSuggestOpen(true); setSuggestIndex(-1); }}
+            onFocus={openSuggest}
+            onBlur={closeSuggestSoon}
+            onKeyDown={onSuggestKey}
+            role="combobox" aria-expanded={suggestOpen && suggestions.length > 0} aria-controls="catalog-suggest" aria-autocomplete="list"
+            placeholder="Cari produk di katalog…" aria-label="Cari produk" autoComplete="off"
+            className="h-10 min-w-0 flex-1 rounded-l-sm px-3 text-sm outline-none placeholder:text-muted"
           />
-          <button type="submit" className="flex h-10 w-12 shrink-0 items-center justify-center bg-brand text-white transition-colors hover:bg-brand-dark" aria-label="Cari">
+          <button type="submit" className="flex h-10 w-12 shrink-0 items-center justify-center rounded-r-sm bg-brand text-white transition-colors hover:bg-brand-dark" aria-label="Cari">
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden>
               <circle cx="11" cy="11" r="7" /><path d="m20 20-3.2-3.2" />
             </svg>
           </button>
 
           {suggestOpen && suggestions.length > 0 && (
-            <ul className="absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-sm border border-line bg-surface py-1 shadow-hover">
-              {suggestions.map((p) => (
-                <li key={p.id}>
-                  <Link href={`/products/${p.slug}`} className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-paper">
+            <ul id="catalog-suggest" role="listbox" aria-label="Saran produk" className="absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-sm border border-line bg-surface py-1 shadow-hover">
+              {suggestions.map((p, i) => (
+                <li key={p.id} role="option" aria-selected={i === suggestIndex}>
+                  <Link href={`/products/${p.slug}`} onMouseEnter={() => setSuggestIndex(i)} onClick={() => setSuggestOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2 text-sm ${i === suggestIndex ? "bg-paper" : "hover:bg-paper"}`}>
                     <span className="h-9 w-9 shrink-0 overflow-hidden rounded-sm bg-paper"><ProductImage slug={p.slug} /></span>
                     <span className="min-w-0 flex-1 truncate">{p.name}</span>
-                    <span className="shrink-0 text-xs font-semibold text-brand">{rupiah(p.price)}</span>
+                    <span className="shrink-0 text-xs font-semibold text-brand-ontint">{rupiah(p.price)}</span>
                   </Link>
                 </li>
               ))}
@@ -129,16 +159,16 @@ export default function CatalogClient() {
 
         {/* Kategori */}
         <div className="mt-4 flex flex-wrap items-center gap-2 border-b border-line pb-4 text-sm">
-          <Link href={buildHref(params, { kategori: undefined })} className={`rounded-sm px-3 py-1.5 ${!kategori ? "bg-brand text-white" : "border border-line hover:border-brand hover:text-brand"}`}>Semua</Link>
+          <Link href={buildHref(params, { kategori: undefined })} className={`rounded-sm px-3 py-1.5 ${!kategori ? "bg-brand text-white" : "border border-line hover:border-brand hover:text-brand-ontint"}`}>Semua</Link>
           {categories.map((c) => (
             <Link key={c} href={buildHref(params, { kategori: c })}
-              className={`rounded-sm px-3 py-1.5 ${kategori === c ? "bg-brand text-white" : "border border-line hover:border-brand hover:text-brand"}`}>{c}</Link>
+              className={`rounded-sm px-3 py-1.5 ${kategori === c ? "bg-brand text-white" : "border border-line hover:border-brand hover:text-brand-ontint"}`}>{c}</Link>
           ))}
         </div>
 
         {/* Toolbar */}
         <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
-          <button type="button" onClick={() => setFiltersOpen((o) => !o)} className="inline-flex items-center gap-1.5 rounded-sm border border-line px-3 py-1.5 hover:border-brand hover:text-brand sm:hidden">
+          <button type="button" onClick={() => setFiltersOpen((o) => !o)} className="inline-flex items-center gap-1.5 rounded-sm border border-line px-3 py-1.5 hover:border-brand hover:text-brand-ontint sm:hidden">
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M4 6h16M7 12h10M10 18h4" /></svg>
             Filter
           </button>
@@ -151,32 +181,56 @@ export default function CatalogClient() {
             </select>
           </label>
 
-          <span className="ml-auto text-muted">{pending ? "Memuatâ€¦" : `${total} produk`}</span>
+          <span className="ml-auto text-muted">{pending ? "Memuat…" : `${total} produk`}</span>
         </div>
 
         {/* Panel filter */}
         <div className={`${filtersOpen ? "block" : "hidden"} mt-3 space-y-4 border-t border-line pt-4 sm:block`}>
           <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
-            <form onSubmit={applyPrice} className="flex flex-wrap items-end gap-2">
-              <span className="w-full text-xs font-medium text-muted sm:w-auto">Rentang harga</span>
-              <input value={minP} onChange={(e) => setMinP(e.target.value.replace(/\D/g, ""))} inputMode="numeric" placeholder={`Min ${rupiah(priceBounds.min)}`} aria-label="Harga minimum"
-                className="h-9 w-32 rounded-sm border border-line bg-surface px-2 text-sm outline-none focus:border-brand" />
-              <span className="pb-2 text-muted">â€”</span>
-              <input value={maxP} onChange={(e) => setMaxP(e.target.value.replace(/\D/g, ""))} inputMode="numeric" placeholder={`Max ${rupiah(priceBounds.max)}`} aria-label="Harga maksimum"
-                className="h-9 w-32 rounded-sm border border-line bg-surface px-2 text-sm outline-none focus:border-brand" />
-              <button type="submit" className="h-9 rounded-sm border border-line px-3 text-sm font-medium hover:border-brand hover:text-brand">Terapkan</button>
+            <form onSubmit={applyPrice} className="w-full sm:w-auto">
+              <span className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted">
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 4h16v6l-8 10L4 10z" /><path d="M9 8h.01" /></svg>
+                Rentang harga
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="flex h-9 items-center gap-1.5 rounded-sm border border-line bg-surface px-2.5 transition-colors focus-within:border-brand focus-within:ring-1 focus-within:ring-brand/30">
+                  <span className="text-xs font-medium text-muted">Rp</span>
+                  <input value={minP ? fmtNum(minP) : ""} onChange={(e) => setMinP(e.target.value.replace(/\D/g, ""))} inputMode="numeric"
+                    placeholder={fmtNum(String(priceBounds.min))} aria-label="Harga minimum"
+                    className="w-16 bg-transparent text-sm text-ink outline-none placeholder:text-muted/60" />
+                </label>
+                <span className="text-muted">—</span>
+                <label className="flex h-9 items-center gap-1.5 rounded-sm border border-line bg-surface px-2.5 transition-colors focus-within:border-brand focus-within:ring-1 focus-within:ring-brand/30">
+                  <span className="text-xs font-medium text-muted">Rp</span>
+                  <input value={maxP ? fmtNum(maxP) : ""} onChange={(e) => setMaxP(e.target.value.replace(/\D/g, ""))} inputMode="numeric"
+                    placeholder={fmtNum(String(priceBounds.max))} aria-label="Harga maksimum"
+                    className="w-16 bg-transparent text-sm text-ink outline-none placeholder:text-muted/60" />
+                </label>
+                <button type="submit" className="h-9 rounded-sm bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-dark">Terapkan</button>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {PRICE_PRESETS.map((p) => {
+                  const active = (minPrice ?? null) === (p.min ? Number(p.min) : null) && (maxPrice ?? null) === (p.max ? Number(p.max) : null);
+                  return (
+                    <button key={p.label} type="button" onClick={() => applyPreset(active ? { min: "", max: "" } : p)}
+                      className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${active ? "border-brand bg-brand-light font-semibold text-brand-ontint" : "border-line text-muted hover:border-brand hover:text-brand-ontint"}`}>
+                      {p.label}
+                    </button>
+                  );
+                })}
+              </div>
             </form>
 
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-medium text-muted">Rating</span>
               {RATINGS.map((r) => (
                 <button key={r.v} type="button" onClick={() => update({ rating: r.v ? String(r.v) : undefined })}
-                  className={`rounded-sm px-3 py-1.5 text-sm ${((minRating ?? 0) === r.v) ? "bg-brand-light font-semibold text-brand" : "border border-line hover:border-brand hover:text-brand"}`}>{r.label}</button>
+                  className={`rounded-sm px-3 py-1.5 text-sm ${((minRating ?? 0) === r.v) ? "bg-brand-light font-semibold text-brand-ontint" : "border border-line hover:border-brand hover:text-brand-ontint"}`}>{r.label}</button>
               ))}
             </div>
 
             {(hasFilter || minP || maxP) && (
-              <button type="button" onClick={resetFilter} className="ml-auto inline-flex items-center gap-1.5 rounded-sm border border-line px-3 py-1.5 text-sm text-muted hover:border-brand hover:text-brand">
+              <button type="button" onClick={resetFilter} className="ml-auto inline-flex items-center gap-1.5 rounded-sm border border-line px-3 py-1.5 text-sm text-muted hover:border-brand hover:text-brand-ontint">
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5" /></svg>
                 Reset filter
               </button>
@@ -196,7 +250,7 @@ export default function CatalogClient() {
               <PageLink href={pageHref(safePage - 1)} disabled={safePage <= 1} label="Sebelumnya" />
               {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
                 <Link key={n} href={pageHref(n)} aria-current={n === safePage ? "page" : undefined}
-                  className={`flex h-9 min-w-9 items-center justify-center rounded-sm border px-2 text-sm ${n === safePage ? "border-brand bg-brand text-white" : "border-line hover:border-brand hover:text-brand"}`}>{n}</Link>
+                  className={`flex h-9 min-w-9 items-center justify-center rounded-sm border px-2 text-sm ${n === safePage ? "border-brand bg-brand text-white" : "border-line hover:border-brand hover:text-brand-ontint"}`}>{n}</Link>
               ))}
               <PageLink href={pageHref(safePage + 1)} disabled={safePage >= pages} label="Berikutnya" next />
             </nav>
@@ -206,7 +260,7 @@ export default function CatalogClient() {
         <div className="mt-3 rounded-sm bg-surface p-10 text-center shadow-card">
           <p className="text-lg font-semibold">Produk tidak ditemukan</p>
           <p className="mt-1 text-sm text-muted">Coba kata kunci lain, longgarkan filter, atau lihat rekomendasi di bawah.</p>
-          <button type="button" onClick={resetFilter} className="mt-4 rounded-sm border border-line px-5 py-2 text-sm font-medium hover:border-brand hover:text-brand">Reset filter</button>
+          <button type="button" onClick={resetFilter} className="mt-4 rounded-sm border border-line px-5 py-2 text-sm font-medium hover:border-brand hover:text-brand-ontint">Reset filter</button>
           <div className="mt-6 grid grid-cols-2 gap-2.5 text-left sm:grid-cols-3 lg:grid-cols-5">
             {[...products].sort((a, b) => discountOf(b) - discountOf(a)).slice(0, 5).map((p) => <ProductCard key={p.id} p={p} />)}
           </div>
@@ -227,7 +281,7 @@ function buildHref(params: URLSearchParams, patch: Record<string, string | undef
 function PageLink({ href, disabled, label, next }: { href: string; disabled: boolean; label: string; next?: boolean }) {
   const cls = "flex h-9 items-center gap-1 rounded-sm border border-line px-3 text-sm";
   if (disabled) return <span className={`${cls} cursor-not-allowed text-muted opacity-50`}>{!next && <Chevron dir="left" />}{label}{next && <Chevron dir="right" />}</span>;
-  return <Link href={href} className={`${cls} hover:border-brand hover:text-brand`}>{!next && <Chevron dir="left" />}{label}{next && <Chevron dir="right" />}</Link>;
+  return <Link href={href} className={`${cls} hover:border-brand hover:text-brand-ontint`}>{!next && <Chevron dir="left" />}{label}{next && <Chevron dir="right" />}</Link>;
 }
 
 function Chevron({ dir }: { dir: "left" | "right" }) {

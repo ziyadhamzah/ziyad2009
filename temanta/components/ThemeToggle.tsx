@@ -9,7 +9,7 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
       onClick={toggle}
       aria-label={isDark ? "Ganti ke mode terang" : "Ganti ke mode gelap"}
       title={isDark ? "Mode terang" : "Mode gelap"}
-      className={`flex h-10 w-10 items-center justify-center rounded-full text-ink transition-colors hover:bg-paper hover:text-brand ${className}`}
+      className={`flex h-10 w-10 items-center justify-center rounded-full text-ink transition-colors hover:bg-paper hover:text-brand-ontint ${className}`}
     >
       {isDark ? (
         <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

@@ -63,8 +63,8 @@ export default function AddressBook() {
               <span className="mb-1.5 block text-[13px] text-ink/70">{f.label}</span>
               <input value={form[f.key]} onChange={(e) => setForm((v) => ({ ...v, [f.key]: e.target.value }))}
                 inputMode={f.key === "phone" || f.key === "postal" ? "numeric" : undefined}
-                className={`${input} ${errors[f.key] ? "border-red-500" : ""}`} />
-              {errors[f.key] && <span className="mt-1 block text-xs text-red-600">{errors[f.key]}</span>}
+                className={`${input} ${errors[f.key] ? "border-danger-fg" : ""}`} />
+              {errors[f.key] && <span className="mt-1 block text-xs text-danger-fg">{errors[f.key]}</span>}
             </label>
           ))}
         </div>
@@ -79,7 +79,7 @@ export default function AddressBook() {
   if (!list.length) {
     return (
       <div className="mt-6">
-        <p className="text-sm text-muted">Belum ada alamat tersimpan. Tambahkan alamat agar checkout lebih cepat.</p>
+        <p className="text-sm text-muted">Belum ada alamat tersimpan.               Tambahkan alamat agar belanja lebih cepat.</p>
         <button type="button" onClick={startAdd} className={`${btnBrand} mt-4`}>+ Tambah alamat</button>
       </div>
     );
@@ -89,7 +89,7 @@ export default function AddressBook() {
     <div className="mt-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted">{list.length} alamat tersimpan</p>
-        <button type="button" onClick={startAdd} className="text-sm font-semibold text-brand hover:underline">+ Tambah alamat</button>
+        <button type="button" onClick={startAdd} className="text-sm font-semibold text-brand-ontint hover:underline">+ Tambah alamat</button>
       </div>
 
       <div className="mt-3 space-y-3">
@@ -104,10 +104,10 @@ export default function AddressBook() {
 
             <div className="mt-3 flex flex-wrap items-center gap-4 text-xs font-semibold">
               {!a.primary && (
-                <button type="button" onClick={() => setPrimary(a.id)} className="text-brand hover:underline">Jadikan utama</button>
+                <button type="button" onClick={() => setPrimary(a.id)} className="text-brand-ontint hover:underline">Jadikan utama</button>
               )}
-              <button type="button" onClick={() => startEdit(a)} className="text-ink/70 hover:text-brand">Ubah</button>
-              <button type="button" onClick={() => remove(a.id)} className="text-ink/70 hover:text-red-600">Hapus</button>
+              <button type="button" onClick={() => startEdit(a)} className="text-ink/70 hover:text-brand-ontint">Ubah</button>
+              <button type="button" onClick={() => remove(a.id)} className="text-ink/70 hover:text-danger-fg">Hapus</button>
             </div>
           </div>
         ))}

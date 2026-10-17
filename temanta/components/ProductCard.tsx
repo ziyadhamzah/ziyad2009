@@ -34,11 +34,11 @@ export default function ProductCard({ p }: { p: Product }) {
         </div>
 
         <div className="flex flex-1 flex-col gap-2 p-3.5">
-          <p className="line-clamp-2 min-h-[2.5rem] text-[13px] font-medium leading-snug text-ink transition-colors group-hover:text-brand">{p.name}</p>
+          <p className="line-clamp-2 min-h-[2.5rem] text-[13px] font-medium leading-snug text-ink transition-colors group-hover:text-brand-ontint">{p.name}</p>
 
           <div className="flex items-center gap-1.5 text-[11px]">
             <span className="flex items-center gap-0.5 font-semibold text-ink">
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-brand" fill="currentColor" aria-hidden><path d="m12 17.3-6.2 3.7 1.7-7L2 9.2l7.1-.6L12 2l2.9 6.6 7.1.6-5.5 4.8 1.7 7z" /></svg>
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-brand-ontint" fill="currentColor" aria-hidden><path d="m12 17.3-6.2 3.7 1.7-7L2 9.2l7.1-.6L12 2l2.9 6.6 7.1.6-5.5 4.8 1.7 7z" /></svg>
               {p.rating.toFixed(1)}
             </span>
             <span className="h-3 w-px bg-line" />
@@ -46,14 +46,14 @@ export default function ProductCard({ p }: { p: Product }) {
           </div>
 
           <div className="mt-auto flex items-baseline gap-2 pt-1">
-            <span className="text-base font-extrabold text-brand">{rupiah(p.price)}</span>
+            <span className="text-base font-extrabold text-brand-ontint">{rupiah(p.price)}</span>
             {off > 0 && <span className="text-xs text-muted line-through">{rupiah(p.basePrice)}</span>}
           </div>
 
           {(freeShip || lowStock) && (
             <div className="flex flex-wrap items-center gap-1.5">
               {freeShip && <span className="rounded-full border border-line px-2 py-0.5 text-[10px] font-medium text-muted">Gratis ongkir</span>}
-              {lowStock && <span className="rounded-full border border-brand/30 bg-brand-light px-2 py-0.5 text-[10px] font-semibold text-brand">Sisa {p.stock}</span>}
+              {lowStock && <span className="rounded-full border border-brand/30 bg-brand-light px-2 py-0.5 text-[10px] font-semibold text-brand-ontint">Sisa {p.stock}</span>}
             </div>
           )}
         </div>

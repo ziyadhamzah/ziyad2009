@@ -59,7 +59,7 @@ export default function LacakPage() {
             {found.lines[0].name}{found.lines.length > 1 ? ` dan ${found.lines.length - 1} produk lain` : ""} · {rupiah(found.total)}
           </p>
           <TrackingPanel order={found} />
-          <Link href={`/orders/${found.id}`} className="mt-4 inline-block text-sm font-semibold text-brand hover:underline">Lihat detail pesanan</Link>
+          <Link href={`/orders/${found.id}`} className="mt-4 inline-block text-sm font-semibold text-brand-ontint hover:underline">Lihat detail pesanan</Link>
         </div>
       )}
 

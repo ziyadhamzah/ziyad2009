@@ -24,7 +24,7 @@ export default function Home() {
           <FlashSale />
         </div>
 
-        <section className="relative mt-6 overflow-hidden rounded-lg bg-ink">
+        <section className="relative mt-6 overflow-hidden rounded-lg bg-inverse">
           <span className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-brand/25 blur-2xl" />
           <span className="pointer-events-none absolute -bottom-20 right-32 h-40 w-40 rounded-full bg-brand/15 blur-2xl" />
           <div className="relative flex flex-col gap-4 px-6 py-6 text-white sm:flex-row sm:items-center">

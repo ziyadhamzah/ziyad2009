@@ -23,18 +23,18 @@ export default function NotificationsPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
       <nav className="mb-4 text-sm text-muted">
-        <Link href="/" className="hover:text-brand">Beranda</Link> <span className="mx-1">â€º</span> <span className="text-ink">Notifikasi</span>
+        <Link href="/" className="hover:text-brand-ontint">Beranda</Link> <span className="mx-1">›</span> <span className="text-ink">Notifikasi</span>
       </nav>
       <div className="rounded-sm bg-surface shadow-card">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
-          <h1 className="text-xl font-bold">Notifikasi {unread > 0 && <span className="text-brand">({unread} belum dibaca)</span>}</h1>
+          <h1 className="text-xl font-bold">Notifikasi {unread > 0 && <span className="text-brand-ontint">({unread} belum dibaca)</span>}</h1>
           {list.length > 0 && (
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              <button onClick={markAllRead} className="text-brand hover:underline">Tandai semua dibaca</button>
-              <button onClick={clear} className="text-muted underline hover:text-brand">Hapus semua</button>
+              <button onClick={markAllRead} className="text-brand-ontint hover:underline">Tandai semua dibaca</button>
+              <button onClick={clear} className="text-muted underline hover:text-brand-ontint">Hapus semua</button>
               <button
                 onClick={() => setSim(simulateDrop())}
-                className="rounded-sm border border-line px-3 py-1.5 text-ink/80 hover:border-brand hover:text-brand">
+                className="rounded-sm border border-line px-3 py-1.5 text-ink/80 hover:border-brand hover:text-brand-ontint">
                 Simulasi pantauan harga (demo)
               </button>
             </div>
@@ -51,7 +51,7 @@ export default function NotificationsPage() {
             {sim && <p className="mt-2 text-xs text-muted">Simulasi untuk: <span className="font-medium text-ink">{sim}</span> — cek notifikasi baru.</p>}
             <div className="mt-5 flex justify-center gap-3">
               <Link href="/products" className="inline-block rounded-sm bg-brand px-6 py-2.5 font-semibold text-white hover:bg-brand-dark">Mulai belanja</Link>
-              <button onClick={() => setSim(simulateDrop())} className="inline-block rounded-sm border border-line px-6 py-2.5 font-semibold text-ink hover:border-brand hover:text-brand">Simulasi demo</button>
+              <button onClick={() => setSim(simulateDrop())} className="inline-block rounded-sm border border-line px-6 py-2.5 font-semibold text-ink hover:border-brand hover:text-brand-ontint">Simulasi demo</button>
             </div>
           </div>
         ) : (

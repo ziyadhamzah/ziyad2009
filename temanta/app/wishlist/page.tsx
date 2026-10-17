@@ -18,7 +18,7 @@ export default function WishlistPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
       <nav className="mb-4 text-sm text-muted">
-        <Link href="/" className="hover:text-brand">Beranda</Link> <span className="mx-1">â€º</span> <span className="text-ink">Favorit saya</span>
+        <Link href="/" className="hover:text-brand-ontint">Beranda</Link> <span className="mx-1">›</span> <span className="text-ink">Favorit saya</span>
       </nav>
       <div className="rounded-sm bg-surface p-5 shadow-card sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
@@ -26,11 +26,11 @@ export default function WishlistPage() {
           {items.length > 0 && (
             <div className="flex flex-wrap items-center gap-3">
               <button onClick={moveAll} className="rounded-sm bg-brand px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark">Masukkan semua ke keranjang</button>
-              <button onClick={clear} className="text-sm text-muted underline hover:text-brand">Hapus semua</button>
+              <button onClick={clear} className="text-sm text-muted underline hover:text-brand-ontint">Hapus semua</button>
             </div>
           )}
         </div>
-        {toast && <p className="mt-3 rounded-sm bg-brand-light px-3 py-2 text-sm text-brand">{toast}</p>}
+        {toast && <p className="mt-3 rounded-sm bg-brand-light px-3 py-2 text-sm text-brand-ontint">{toast}</p>}
 
         {ready && items.length === 0 ? (
           <div className="py-16 text-center">
@@ -48,7 +48,7 @@ export default function WishlistPage() {
                 <ProductCard p={p} />
                 <button
                   onClick={() => add({ slug: p.slug, name: p.name, price: p.price, tone: p.tone })}
-                  className="mt-2 w-full rounded-sm border border-brand/40 bg-brand-light px-3 py-2 text-sm font-semibold text-brand transition-colors hover:bg-brand hover:text-white">
+                  className="mt-2 w-full rounded-sm border border-brand/40 bg-brand-light px-3 py-2 text-sm font-semibold text-brand-ontint transition-colors hover:bg-brand hover:text-white">
                   Tambahkan ke keranjang
                 </button>
               </div>

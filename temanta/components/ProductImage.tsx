@@ -119,7 +119,7 @@ export default function ProductImage({ slug, zoom = 1 }: { slug: string; zoom?: 
   if (p?.image && !failed) {
     return (
       <div className="relative h-full w-full overflow-hidden">
-        <Image src={p.image} alt={p.name} fill unoptimized
+        <Image src={p.image} alt={p.name} fill
           sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
           className="object-cover"
           style={{ transform: zoom === 1 ? undefined : `scale(${zoom})` }}

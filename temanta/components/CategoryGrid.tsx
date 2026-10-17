@@ -16,7 +16,7 @@ export default function CategoryGrid() {
               <span className="block aspect-square overflow-hidden rounded-sm bg-paper">
                 {cover && <div className="h-full w-full transition-transform duration-500 group-hover:scale-105"><ProductImage slug={cover.slug} /></div>}
               </span>
-              <span className="mt-2.5 block text-sm font-semibold text-ink group-hover:text-brand">{c}</span>
+              <span className="mt-2.5 block text-sm font-semibold text-ink group-hover:text-brand-ontint">{c}</span>
               <span className="text-xs text-muted">{count} produk</span>
             </Link>
           );

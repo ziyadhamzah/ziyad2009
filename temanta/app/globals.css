@@ -10,6 +10,23 @@
   --surface: 255 255 255;
   --brand-light: 255 240 230;
   --brand-50: 255 247 241;
+  /* Teks brand di atas tint brand-light (kontras 4.5:1 di light mode). */
+  --brand-ontint: 184 66 0;
+  /* Permukaan "inverse" (gelap) yang tetap kontras di kedua tema. */
+  --inverse: 17 17 17;
+  --inverse-fg: 255 255 255;
+  --inverse-muted: 255 255 255;
+  /* Status semantic */
+  --ok-fg: 21 128 61;
+  --ok-bg: 240 253 244;
+  --ok-fill: 5 121 85;
+  --danger-fg: 220 38 38;
+  --danger-bg: 254 242 242;
+  --warn-fg: 161 98 7;
+  --warn-bg: 255 251 235;
+  --warn-ink: 120 53 15;
+  --shadow: 17 17 17;
+  --shadow-soft: 255 255 255;
 }
 
 .dark {
@@ -20,6 +37,20 @@
   --surface: 26 26 29;
   --brand-light: 53 33 15;
   --brand-50: 30 20 12;
+  --brand-ontint: 255 152 84;
+  --inverse: 41 41 47;
+  --inverse-fg: 240 240 243;
+  --inverse-muted: 200 200 208;
+  --ok-fg: 110 231 166;
+  --ok-bg: 8 38 26;
+  --ok-fill: 5 121 85;
+  --danger-fg: 252 165 165;
+  --danger-bg: 48 18 18;
+  --warn-fg: 251 191 36;
+  --warn-bg: 47 34 8;
+  --warn-ink: 253 230 138;
+  --shadow: 0 0 0;
+  --shadow-soft: 0 0 0;
   color-scheme: dark;
 }
 
@@ -53,13 +84,13 @@
     @apply btn bg-brand text-white hover:bg-brand-dark;
   }
   .btn-outline {
-    @apply btn border border-line bg-surface text-ink hover:border-brand hover:text-brand;
+    @apply btn border border-line bg-surface text-ink hover:border-brand hover:text-brand-ontint;
   }
   .btn-soft {
-    @apply btn bg-brand-light text-brand hover:bg-brand hover:text-white;
+    @apply btn bg-brand-light text-brand-ontint hover:bg-brand hover:text-white;
   }
   .btn-ghost {
-    @apply btn text-muted hover:text-brand;
+    @apply btn text-muted hover:text-brand-ontint;
   }
 
   .input {

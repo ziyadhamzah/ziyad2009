@@ -38,7 +38,7 @@ export default function AdminPage() {
 
   const reviews = all();
 
-  if (!authReady || !ready || !user) return <p className="mx-auto max-w-6xl px-4 py-24 text-muted">Memuatâ€¦</p>;
+  if (!authReady || !ready || !user) return <p className="mx-auto max-w-6xl px-4 py-24 text-muted">Memuat…</p>;
   if (!user.isAdmin) return (
     <div className="mx-auto max-w-3xl px-4 py-24 text-center">
       <h1 className="text-2xl font-bold">Akses ditolak</h1>
@@ -56,10 +56,10 @@ export default function AdminPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
       <nav className="mb-4 text-sm text-muted">
-        <Link href="/" className="hover:text-brand">Beranda</Link> <span className="mx-1">â€º</span> <span className="text-ink">Dashboard admin</span>
+        <Link href="/" className="hover:text-brand-ontint">Beranda</Link> <span className="mx-1">›</span> <span className="text-ink">Panel admin</span>
       </nav>
 
-      <h1 className="text-2xl font-bold">Dashboard admin</h1>
+      <h1 className="text-2xl font-bold">Panel admin</h1>
       <p className="mt-1 text-sm text-muted">Ringkasan dihitung dari data toko yang sebenarnya (katalog, pesanan, dan ulasan).</p>
 
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -71,7 +71,7 @@ export default function AdminPage() {
         ].map((c) => (
           <div key={c.label} className="rounded-sm bg-surface p-4 shadow-card">
             <p className="text-xs text-muted">{c.label}</p>
-            <p className="mt-1 text-xl font-bold text-brand">{c.value}</p>
+            <p className="mt-1 text-xl font-bold text-brand-ontint">{c.value}</p>
           </div>
         ))}
       </div>
@@ -83,8 +83,8 @@ export default function AdminPage() {
       </div>
 
       <div className="mt-6 flex gap-2 border-b border-line">
-        <button onClick={() => setTab("pesanan")} className={`px-4 py-2 text-sm font-semibold ${tab === "pesanan" ? "border-b-2 border-brand text-brand" : "text-muted hover:text-ink"}`}>Kelola pesanan</button>
-        <button onClick={() => setTab("ulasan")} className={`px-4 py-2 text-sm font-semibold ${tab === "ulasan" ? "border-b-2 border-brand text-brand" : "text-muted hover:text-ink"}`}>Moderasi ulasan ({reviews.length})</button>
+        <button onClick={() => setTab("pesanan")} className={`px-4 py-2 text-sm font-semibold ${tab === "pesanan" ? "border-b-2 border-brand text-brand-ontint" : "text-muted hover:text-ink"}`}>Kelola pesanan</button>
+        <button onClick={() => setTab("ulasan")} className={`px-4 py-2 text-sm font-semibold ${tab === "ulasan" ? "border-b-2 border-brand text-brand-ontint" : "text-muted hover:text-ink"}`}>Moderasi ulasan ({reviews.length})</button>
       </div>
 
       {tab === "pesanan" && (
@@ -95,18 +95,18 @@ export default function AdminPage() {
             <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="px-4 py-3">Nomor</th>
-                  <th className="px-4 py-3">Tanggal</th>
-                  <th className="px-4 py-3">Pembeli</th>
-                  <th className="px-4 py-3">Total</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Ubah status</th>
+                  <th scope="col" className="px-4 py-3">Nomor</th>
+                  <th scope="col" className="px-4 py-3">Tanggal</th>
+                  <th scope="col" className="px-4 py-3">Pembeli</th>
+                  <th scope="col" className="px-4 py-3">Total</th>
+                  <th scope="col" className="px-4 py-3">Status</th>
+                  <th scope="col" className="px-4 py-3">Ubah status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {orders.map((o) => (
                   <tr key={o.id} className="hover:bg-paper/60">
-                    <td className="px-4 py-3"><Link href={`/orders/${o.id}`} className="font-medium text-brand hover:underline">{o.number}</Link></td>
+                    <td className="px-4 py-3"><Link href={`/orders/${o.id}`} className="font-medium text-brand-ontint hover:underline">{o.number}</Link></td>
                     <td className="px-4 py-3 text-muted">{new Date(o.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</td>
                     <td className="px-4 py-3">{o.customer?.name ?? o.address.name}</td>
                     <td className="px-4 py-3 font-medium">{rupiah(o.total)}</td>
@@ -115,6 +115,7 @@ export default function AdminPage() {
                       <select
                         value={o.status}
                         disabled={busy === o.id}
+                        aria-label={`Ubah status pesanan ${o.number}`}
                         onChange={(e) => change(o.id, e.target.value as OrderStatus)}
                         className="h-9 rounded-sm border border-line bg-surface px-2 text-sm outline-none focus:border-brand disabled:opacity-50">
                         {allStatuses.map((s) => <option key={s} value={s}>{statusLabel[s]}</option>)}
@@ -137,11 +138,11 @@ export default function AdminPage() {
               {reviews.map((r) => (
                 <li key={r.id} className="flex items-start gap-4 px-4 py-4">
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium">{r.name} Â· {r.rating}/5 {r.variant && <span className="text-muted">({r.variant})</span>}</p>
-                    <p className="mt-0.5 text-xs text-muted">{r.productSlug} Â· {r.date}{r.verified ? " Â· Pembelian terverifikasi" : ""}</p>
+                    <p className="text-sm font-medium">{r.name} · {r.rating}/5 {r.variant && <span className="text-muted">({r.variant})</span>}</p>
+                    <p className="mt-0.5 text-xs text-muted">{r.productSlug} · {r.date}{r.verified ? " · Pembelian terverifikasi" : ""}</p>
                     <p className="mt-2 text-sm text-ink/85">{r.text}</p>
                   </div>
-                  <button onClick={() => remove(r.id)} className="shrink-0 text-xs text-muted underline hover:text-red-600">Hapus</button>
+                  <button onClick={() => remove(r.id)} className="shrink-0 text-xs text-muted underline hover:text-danger-fg">Hapus</button>
                 </li>
               ))}
             </ul>

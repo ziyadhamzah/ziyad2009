@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { suggestProducts } from "@/lib/products";
 import { rupiah } from "@/lib/format";
 import ProductImage from "./ProductImage";
 
 export default function SearchBar({
-  placeholder = "Cari produk, kategori, atau merekâ€¦",
+  placeholder = "Cari produk, kategori, atau merek…",
   action = "/products",
   autoFocus = false,
   className = "",
@@ -25,6 +25,8 @@ export default function SearchBar({
 
   const suggestions = useMemo(() => (term.trim() ? suggestProducts(term, 6) : []), [term]);
   const showList = open && suggestions.length > 0;
+
+  useEffect(() => () => { if (blurTimer.current) clearTimeout(blurTimer.current); }, []);
 
   const go = (href: string) => {
     setOpen(false);
@@ -62,6 +64,10 @@ export default function SearchBar({
           autoFocus={autoFocus}
           placeholder={placeholder}
           aria-label="Cari produk"
+          role="combobox"
+          aria-expanded={showList}
+          aria-controls="search-suggest"
+          aria-autocomplete="list"
           autoComplete="off"
           className="h-10 min-w-0 flex-1 bg-transparent px-3 text-sm text-ink outline-none placeholder:text-muted"
         />
@@ -74,9 +80,9 @@ export default function SearchBar({
       </div>
 
       {showList && (
-        <ul className="absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-sm border border-line bg-surface py-1 shadow-float">
+        <ul id="search-suggest" role="listbox" aria-label="Saran pencarian" className="absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-sm border border-line bg-surface py-1 shadow-float">
           {suggestions.map((p, i) => (
-            <li key={p.id}>
+            <li key={p.id} role="option" aria-selected={i === index}>
               <Link
                 href={`/products/${p.slug}`}
                 onMouseEnter={() => setIndex(i)}
@@ -88,7 +94,7 @@ export default function SearchBar({
                   <span className="block truncate text-ink">{p.name}</span>
                   <span className="text-xs text-muted">{p.category}</span>
                 </span>
-                <span className="shrink-0 text-sm font-semibold text-brand">{rupiah(p.price)}</span>
+                <span className="shrink-0 text-sm font-semibold text-brand-ontint">{rupiah(p.price)}</span>
               </Link>
             </li>
           ))}

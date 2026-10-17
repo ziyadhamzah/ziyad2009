@@ -37,7 +37,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <StoreProvider>
                     <CompareProvider>
                     <AddressProvider>
-                    <ReviewsProvider><Navbar /><main>{children}</main><Footer /><CompareBar /><Toast /></ReviewsProvider>
+                    <ReviewsProvider>
+                      <a href="#konten" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[200] focus:rounded-sm focus:bg-brand focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white">Lewati ke konten</a>
+                      <Navbar /><main id="konten">{children}</main><Footer /><CompareBar /><Toast /></ReviewsProvider>
                     </AddressProvider>
                     </CompareProvider>
                   </StoreProvider>

@@ -24,11 +24,12 @@ export default function AccountPage() {
   const [profile, setProfile] = useState({ name: "", phone: "" });
   const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState<"profile" | "password" | null>(null);
 
   useEffect(() => { if (authReady && !user) router.replace("/login?next=/account"); }, [authReady, user, router]);
   useEffect(() => { if (user) setProfile({ name: user.name, phone: user.phone }); }, [user]);
 
-  if (!authReady || !user) return <p className="shell py-24 text-muted">Memuat akunâ€¦</p>;
+  if (!authReady || !user) return <p className="shell py-24 text-muted">Memuat akun…</p>;
 
   const mine = storeReady ? orders.filter((o) => !o.customer || o.customer.email === user.email) : [];
   const active = mine.filter((o) => !["delivered", "cancelled"].includes(o.status)).length;
@@ -36,24 +37,30 @@ export default function AccountPage() {
 
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (busy) return;
+    setBusy("profile");
     const err = await updateProfile(profile);
     setMsg(err ? { ok: false, text: err } : { ok: true, text: "Profil berhasil disimpan." });
+    setBusy(null);
   };
 
   const savePassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (busy) return;
     if (pw.next !== pw.confirm) return setMsg({ ok: false, text: "Konfirmasi kata sandi baru tidak cocok." });
+    setBusy("password");
     const err = await changePassword(pw.current, pw.next);
-    if (err) return setMsg({ ok: false, text: err });
+    if (err) { setMsg({ ok: false, text: err }); setBusy(null); return; }
     setPw({ current: "", next: "", confirm: "" });
     setMsg({ ok: true, text: "Kata sandi berhasil diubah." });
+    setBusy(null);
   };
 
   return (
     <div className="bg-paper">
       <div className="shell py-8">
         <nav className="mb-4 text-sm text-muted">
-          <Link href="/" className="hover:text-brand">Beranda</Link> <span className="mx-1">â€º</span> <span className="text-ink">Akun saya</span>
+          <Link href="/" className="hover:text-brand-ontint">Beranda</Link> <span className="mx-1">›</span> <span className="text-ink">Akun saya</span>
         </nav>
 
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -71,11 +78,11 @@ export default function AccountPage() {
 
             <div className="grid grid-cols-2 divide-x divide-line border-b border-line text-center">
               <div className="p-4">
-                <p className="text-xl font-bold text-brand">{active}</p>
+                <p className="text-xl font-bold text-brand-ontint">{active}</p>
                 <p className="text-xs text-muted">pesanan aktif</p>
               </div>
               <div className="p-4">
-                <p className="text-xl font-bold text-brand">{rupiah(spent)}</p>
+                <p className="text-xl font-bold text-brand-ontint">{rupiah(spent)}</p>
                 <p className="text-xs text-muted">total belanja</p>
               </div>
             </div>
@@ -87,7 +94,7 @@ export default function AccountPage() {
                 ["alamat", "Alamat saya", <path key="a" d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z" />, <circle key="b" cx="12" cy="10" r="3" />],
               ] as const).map(([id, label, p1, p2]) => (
                 <button key={id} onClick={() => { setTab(id); setMsg(null); }}
-                  className={`flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-left transition ${tab === id ? "bg-brand-light font-semibold text-brand" : "text-ink/75 hover:bg-paper"}`}>
+                  className={`flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-left transition ${tab === id ? "bg-brand-light font-semibold text-brand-ontint" : "text-ink/75 hover:bg-paper"}`}>
                   <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{p1}{p2}</svg>
                   {label}
                 </button>
@@ -98,7 +105,7 @@ export default function AccountPage() {
               </Link>
               <Link href="/wishlist" className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-left text-ink/75 transition hover:bg-paper">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg>
-                Favorit saya {favCount > 0 && <span className="ml-auto rounded-sm bg-brand-light px-1.5 text-xs font-semibold text-brand">{favCount}</span>}
+                Favorit saya {favCount > 0 && <span className="ml-auto rounded-sm bg-brand-light px-1.5 text-xs font-semibold text-brand-ontint">{favCount}</span>}
               </Link>
               <Link href="/chat" className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-left text-ink/75 transition hover:bg-paper">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 21l1-4.2a8.4 8.4 0 0 1-.9-3.9A8.4 8.4 0 0 1 11.5 3a8.4 8.4 0 0 1 9.5 8.5z" /></svg>
@@ -109,7 +116,7 @@ export default function AccountPage() {
                 Keranjang saya
               </Link>
               <button onClick={() => { logout(); router.push("/"); }}
-                className="flex w-full items-center gap-3 rounded-sm border-t border-line px-3 py-2.5 text-left text-ink/75 transition hover:bg-paper hover:text-brand">
+                className="flex w-full items-center gap-3 rounded-sm border-t border-line px-3 py-2.5 text-left text-ink/75 transition hover:bg-paper hover:text-brand-ontint">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
                 Keluar
               </button>
@@ -123,12 +130,12 @@ export default function AccountPage() {
               {tab === "profil"
                 ? "Perbarui nama dan nomor HP yang dipakai untuk pesanan."
                 : tab === "alamat"
-                  ? "Kelola alamat pengiriman supaya checkout lebih cepat."
+                  ? "Kelola alamat pengiriman supaya belanja lebih cepat."
                   : "Pilih kata sandi yang belum pernah dipakai di situs lain."}
             </p>
 
             {msg && (
-              <p className={`mt-4 rounded-sm px-3 py-2 text-sm ${msg.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}>{msg.text}</p>
+              <p className={`mt-4 rounded-sm px-3 py-2 text-sm ${msg.ok ? "bg-ok-bg text-ok-fg" : "bg-danger-bg text-danger-fg"}`}>{msg.text}</p>
             )}
 
             {tab === "profil" ? (
@@ -147,7 +154,7 @@ export default function AccountPage() {
                   <input value={profile.phone} onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))} inputMode="numeric" autoComplete="tel" placeholder="08xxxxxxxxxx" className={input} />
                 </label>
                 <div className="flex gap-3 pt-2">
-                  <button type="submit" className={btnBrand}>Simpan perubahan</button>
+                  <button type="submit" disabled={busy === "profile"} className={btnBrand}>{busy === "profile" ? "Menyimpan…" : "Simpan perubahan"}</button>
                   <button type="button" onClick={() => { setProfile({ name: user.name, phone: user.phone }); setMsg(null); }} className={btnGhost}>Batal</button>
                 </div>
               </form>
@@ -168,7 +175,7 @@ export default function AccountPage() {
                   <input value={pw.confirm} onChange={(e) => setPw((p) => ({ ...p, confirm: e.target.value }))} type="password" autoComplete="new-password" className={input} />
                 </label>
                 <div className="pt-2">
-                  <button type="submit" className={btnBrand}>Ubah kata sandi</button>
+                  <button type="submit" disabled={busy === "password"} className={btnBrand}>{busy === "password" ? "Menyimpan…" : "Ubah kata sandi"}</button>
                 </div>
               </form>
             )}
@@ -180,15 +187,15 @@ export default function AccountPage() {
           <section className="mt-6 rounded-sm bg-surface p-6 shadow-card sm:p-8">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold">Pesanan terbaru</h2>
-              <Link href="/orders" className="text-sm font-semibold text-brand hover:underline">Lihat semua</Link>
+              <Link href="/orders" className="text-sm font-semibold text-brand-ontint hover:underline">Lihat semua</Link>
             </div>
             <ul className="mt-4 divide-y divide-line">
               {mine.slice(0, 3).map((o) => (
                 <li key={o.id}>
-                  <Link href={`/orders/${o.id}`} className="flex items-center justify-between gap-3 py-3 transition-colors hover:text-brand">
+                  <Link href={`/orders/${o.id}`} className="flex items-center justify-between gap-3 py-3 transition-colors hover:text-brand-ontint">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{o.number}</p>
-                      <p className="truncate text-xs text-muted">{new Date(o.createdAt).toLocaleDateString("id-ID", { dateStyle: "long" })} Â· {o.lines[0].name}{o.lines.length > 1 ? ` +${o.lines.length - 1} lain` : ""}</p>
+                      <p className="truncate text-xs text-muted">{new Date(o.createdAt).toLocaleDateString("id-ID", { dateStyle: "long" })} · {o.lines[0].name}{o.lines.length > 1 ? ` +${o.lines.length - 1} lain` : ""}</p>
                     </div>
                     <div className="flex shrink-0 items-center gap-4">
                       <span className="text-sm font-bold">{rupiah(o.total)}</span>

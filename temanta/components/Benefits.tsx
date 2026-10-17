@@ -11,7 +11,7 @@ const items = [
   },
   {
     title: "Kirim ke seluruh negeri",
-    text: "Pilihan kurir reguler, ekonomi, sampai same day.",
+    text: "Pilihan kurir reguler, ekonomi, sampai kilat (same day).",
     icon: (
       <>
         <path d="M1 3h13v13H1zM14 8h4l3 3v5h-7z" />
@@ -22,7 +22,7 @@ const items = [
   },
   {
     title: "Pembayaran fleksibel",
-    text: "QRIS, transfer bank, dan e-wallet dalam satu checkout.",
+    text: "QRIS, transfer bank, dan e-wallet dalam satu halaman pembayaran.",
     icon: (
       <>
         <rect x="2" y="5" width="20" height="14" rx="2" />
@@ -46,7 +46,7 @@ export default function Benefits() {
     <section className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
       {items.map((b) => (
         <div key={b.title} className="card flex items-start gap-3 p-4 transition-shadow hover:shadow-card">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-light text-brand">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-light text-brand-ontint">
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{b.icon}</svg>
           </span>
           <div className="min-w-0">

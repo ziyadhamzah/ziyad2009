@@ -46,7 +46,7 @@ export default function OrderDetail() {
                 Tandai “{statusLabel[nextStatus]}”
               </button>
             )}
-            <button onClick={() => setStatus(o.id, "cancelled")} className="rounded-sm border border-line px-4 py-2 text-sm text-muted transition-colors hover:border-red-400 hover:text-red-600">
+            <button onClick={() => setStatus(o.id, "cancelled")} className="rounded-sm border border-line px-4 py-2 text-sm text-muted transition-colors hover:border-danger-fg hover:text-danger-fg">
               Batalkan pesanan
             </button>
           </div>
@@ -64,7 +64,7 @@ export default function OrderDetail() {
             <p className="text-sm font-medium">{rupiah(l.qty * l.price)}</p></li>))}</ul>
         <dl className="mt-4 space-y-1 text-sm">
           <div className="flex justify-between"><dt className="text-muted">Subtotal</dt><dd>{rupiah(o.subtotal)}</dd></div>
-          {(o.discount ?? 0) > 0 && <div className="flex justify-between text-brand"><dt>Voucher {o.voucherCode}</dt><dd>-{rupiah(o.discount ?? 0)}</dd></div>}
+          {(o.discount ?? 0) > 0 && <div className="flex justify-between text-brand-ontint"><dt>Voucher {o.voucherCode}</dt><dd>-{rupiah(o.discount ?? 0)}</dd></div>}
           <div className="flex justify-between"><dt className="text-muted">Ongkir</dt><dd>{o.shipping ? rupiah(o.shipping) : "Gratis"}</dd></div>
           <div className="flex justify-between pt-2 text-base font-bold"><dt>Total</dt><dd>{rupiah(o.total)}</dd></div></dl>
       </section>

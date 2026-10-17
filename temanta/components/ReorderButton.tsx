@@ -24,8 +24,8 @@ export default function ReorderButton({ lines, label = "Beli lagi", className = 
   if (msg) {
     return (
       <span className="flex items-center gap-2 text-xs">
-        <span className={msg.ok ? "text-green-600" : "text-red-600"}>{msg.text}</span>
-        <Link href="/cart" className="font-semibold text-brand underline">Lihat keranjang</Link>
+        <span className={msg.ok ? "text-ok-fg" : "text-danger-fg"}>{msg.text}</span>
+        <Link href="/cart" className="font-semibold text-brand-ontint underline">Lihat keranjang</Link>
       </span>
     );
   }
@@ -34,7 +34,7 @@ export default function ReorderButton({ lines, label = "Beli lagi", className = 
     <button
       type="button"
       onClick={run}
-      className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-sm border border-brand px-4 text-xs font-semibold text-brand transition hover:bg-brand hover:text-white ${className}`}>
+      className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-sm border border-brand px-4 text-xs font-semibold text-brand-ontint transition hover:bg-brand hover:text-white ${className}`}>
       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 3v6h6" /><path d="M3.5 13a9 9 0 1 0 2.1-6.4L3 9" /></svg>
       {label}
     </button>

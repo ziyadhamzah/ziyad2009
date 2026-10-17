@@ -31,18 +31,18 @@ export default function FlashSale() {
   return (
     <section className="overflow-hidden rounded-sm bg-surface shadow-card">
       <div className="flex items-center gap-3 border-b border-line px-4 py-3">
-        <h2 className="flex items-center gap-1.5 text-xl font-black italic uppercase tracking-tight text-brand">
+        <h2 className="flex items-center gap-1.5 text-xl font-black italic uppercase tracking-tight text-brand-ontint">
           <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden><path d="M13 2 3 14h7l-1 8 11-13h-7z" /></svg>
           Flash Sale
         </h2>
         <div className="flex items-center gap-1 text-white">
-          <span className="rounded-sm bg-ink px-1.5 py-0.5 text-sm font-bold">{pad(h)}</span>
+          <span className="rounded-sm bg-inverse px-1.5 py-0.5 text-sm font-bold">{pad(h)}</span>
           <span className="text-ink">:</span>
-          <span className="rounded-sm bg-ink px-1.5 py-0.5 text-sm font-bold">{pad(m)}</span>
+          <span className="rounded-sm bg-inverse px-1.5 py-0.5 text-sm font-bold">{pad(m)}</span>
           <span className="text-ink">:</span>
-          <span className="rounded-sm bg-ink px-1.5 py-0.5 text-sm font-bold">{pad(s)}</span>
+          <span className="rounded-sm bg-inverse px-1.5 py-0.5 text-sm font-bold">{pad(s)}</span>
         </div>
-        <Link href="/products" className="ml-auto text-sm text-brand hover:underline">Lihat Semua</Link>
+        <Link href="/products" className="ml-auto text-sm text-brand-ontint hover:underline">Lihat semua</Link>
       </div>
 
       <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto p-4">
@@ -54,11 +54,11 @@ export default function FlashSale() {
                 <div className="h-full w-full transition-transform duration-500 group-hover:scale-105"><ProductImage slug={p.slug} /></div>
                 {off > 0 && <span className="absolute bottom-0 right-0 bg-brand px-1.5 py-0.5 text-[11px] font-bold leading-4 text-white">-{off}%</span>}
               </div>
-              <p className="mt-2 font-bold text-brand">{rupiah(p.price)}</p>
+              <p className="mt-2 font-bold text-brand-ontint">{rupiah(p.price)}</p>
               {off > 0 && <p className="text-[11px] text-muted line-through">{rupiah(p.basePrice)}</p>}
               <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-muted">
                 <span>Terjual {p.sold.toLocaleString("id-ID")}</span>
-                <span className={p.stock <= 10 ? "font-medium text-brand" : ""}>Sisa {p.stock}</span>
+                <span className={p.stock <= 10 ? "font-medium text-brand-ontint" : ""}>Sisa {p.stock}</span>
               </div>
             </Link>
           );
