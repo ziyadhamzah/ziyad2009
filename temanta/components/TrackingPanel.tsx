@@ -11,8 +11,10 @@ const courierLogo: Record<string, string> = { JNE: "bg-[#e4002b]", "J&T": "bg-[#
 
 export default function TrackingPanel({ order }: { order: Order }) {
   const [copied, setCopied] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const events = trackingEvents(order);
+  const destLabel = cityCoord(order.address.city).label;
   const resi = resiOf(order);
   const eta = etaOf(order);
   const etaWhen = etaDate(order);
@@ -67,24 +69,38 @@ export default function TrackingPanel({ order }: { order: Order }) {
       )}
 
       {!cancelled && (
-        <div className="border-b border-line">
-          <div className="flex items-center justify-between gap-3 px-5 pt-4 sm:px-6">
+        <div className={expanded ? "fixed inset-0 z-[1000] flex flex-col bg-surface" : "border-b border-line"}>
+          <div className="flex items-center justify-between gap-3 px-5 py-3 sm:px-6">
             <p className="flex items-center gap-1.5 text-sm font-semibold">
               <svg viewBox="0 0 24 24" className="h-4 w-4 text-brand-ontint" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M9 20 3 17V4l6 3 6-3 6 3v13l-6-3-6 3z" /><path d="M9 7v13M15 4v13" /></svg>
               Posisi paket
             </p>
-            <span className="truncate text-xs text-muted">Tujuan: {cityCoord(order.address.city).label}</span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="hidden truncate text-xs text-muted sm:inline">Tujuan: {destLabel}</span>
+              <button type="button" onClick={() => setExpanded((v) => !v)}
+                aria-label={expanded ? "Kecilkan peta" : "Perbesar peta"}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-sm border border-line px-2.5 py-1 text-xs font-medium text-ink transition-colors hover:border-brand hover:text-brand-ontint">
+                {expanded ? (
+                  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+                )}
+                <span className="hidden sm:inline">{expanded ? "Kecilkan" : "Perbesar"}</span>
+              </button>
+            </div>
           </div>
-          <div className="relative z-0 mt-3 h-[300px] w-full overflow-hidden border-t border-line sm:h-[340px]">
+          <div className={expanded ? "relative z-0 min-h-0 flex-1" : "relative z-0 mt-1 h-[320px] w-full overflow-hidden border-t border-line sm:h-[380px]"}>
             <DeliveryMap order={order} />
           </div>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-5 py-3 text-xs text-muted sm:px-6">
-            <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-full bg-inverse" />Gudang asal</span>
-            <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-full bg-brand" />Paket / tujuan</span>
-            <span className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-5 rounded bg-brand" />Sudah dilalui</span>
-            <span className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-5 rounded bg-line [background-image:repeating-linear-gradient(90deg,currentColor_0_3px,transparent_3px_7px)] text-muted" />Belum dilalui</span>
-            <span className="ml-auto hidden sm:inline">Peta &copy; OpenStreetMap</span>
-          </div>
+          {!expanded && (
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-5 py-3 text-xs text-muted sm:px-6">
+              <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-full bg-inverse" />Gudang asal</span>
+              <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-full bg-brand" />Paket / tujuan</span>
+              <span className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-5 rounded bg-brand" />Sudah dilalui</span>
+              <span className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-5 rounded bg-line [background-image:repeating-linear-gradient(90deg,currentColor_0_3px,transparent_3px_7px)] text-muted" />Belum dilalui</span>
+              <span className="ml-auto hidden sm:inline">Peta &copy; OpenStreetMap</span>
+            </div>
+          )}
         </div>
       )}
 

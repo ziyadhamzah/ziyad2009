@@ -44,6 +44,19 @@ function FitBounds({ points, boundsKey }: { points: LatLng[]; boundsKey: string 
   return null;
 }
 
+// Sesuaikan ukuran peta saat container berubah (resize / mode layar penuh).
+function AutoResize() {
+  const map = useMap();
+  useEffect(() => {
+    const el = map.getContainer();
+    const ro = new ResizeObserver(() => map.invalidateSize());
+    ro.observe(el);
+    const t = setTimeout(() => map.invalidateSize(), 220);
+    return () => { ro.disconnect(); clearTimeout(t); };
+  }, [map]);
+  return null;
+}
+
 // Marker truk yang menghadap ke arah perjalanan (rotasi mengikuti bearing rute).
 function MovingTruck({ position, bearing, courier, icon }: { position: LatLng; bearing: number; courier: string; icon: L.DivIcon }) {
   const ref = useRef<L.Marker | null>(null);
@@ -164,6 +177,7 @@ export default function DeliveryMapInner({ order }: { order: Order }) {
         >
           <TileLayer key={isDark ? "dark" : "light"} attribution={tiles.attr} url={tiles.url} />
           <ZoomControl position="bottomright" />
+          <AutoResize />
 
           {/* Rute belum dilalui (animasi putus-putus bergerak) */}
           <Polyline positions={route} pathOptions={{ className: "tmt-route-dash", color: isDark ? "#8a8a92" : "#111111", weight: 3, opacity: 0.35, dashArray: "2 10", lineCap: "round" }} />
