@@ -31,74 +31,61 @@ export default function StorePage({ searchParams }: { searchParams: { tab?: stri
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
       <div className="overflow-hidden rounded-lg bg-surface shadow-card">
-        <div className="relative h-36 overflow-hidden bg-gradient-to-br from-brand-deep via-brand to-brand-dark sm:h-48">
-          <span className="pointer-events-none absolute -right-8 -top-12 h-44 w-44 rounded-full bg-surface/10" />
-          <span className="pointer-events-none absolute -bottom-16 left-1/4 h-36 w-36 rounded-full bg-surface/10" />
-          <span className="pointer-events-none absolute right-1/3 top-4 h-16 w-16 rounded-full bg-surface/5" />
-          <div className="absolute inset-0 opacity-[0.13] [background-image:repeating-linear-gradient(135deg,#fff_0_2px,transparent_2px_16px)]" />
-        </div>
-
-        <div className="relative px-4 pb-4 sm:px-6 sm:pb-5">
-          <div className="-mt-10 flex flex-wrap items-end gap-x-4 gap-y-3 sm:-mt-12">
-            <span className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border-4 border-surface bg-surface text-brand-ontint shadow-float sm:h-24 sm:w-24">
+        <div className="relative overflow-hidden bg-gradient-to-br from-brand-deep via-brand to-brand-dark">
+          <span className="pointer-events-none absolute -right-12 -top-16 h-56 w-56 rounded-full bg-white/15 blur-2xl" />
+          <span className="pointer-events-none absolute -bottom-24 left-1/3 h-52 w-52 rounded-full bg-white/10 blur-2xl" />
+          <div className="relative flex flex-wrap items-center gap-4 px-4 py-6 sm:gap-5 sm:px-6 sm:py-7">
+            <span className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-surface text-brand-ontint shadow-float ring-4 ring-white/25 sm:h-24 sm:w-24">
               <svg viewBox="0 0 24 24" className="h-9 w-9 sm:h-11 sm:w-11" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><path d="M3 6h18M16 10a4 4 0 0 1-8 0" /></svg>
               {store.verified && (
-                <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface bg-brand text-white" title="Toko terverifikasi">
+                <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-brand text-white" title="Toko terverifikasi">
                   <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m5 12 5 5L20 7" /></svg>
                 </span>
               )}
             </span>
 
-            <div className="min-w-0 flex-1 pb-1">
+            <div className="min-w-0 flex-1 text-white">
               <h1 className="flex items-center gap-1.5 text-xl font-bold sm:text-2xl">
                 {store.name}
                 {store.verified && (
-                  <svg viewBox="0 0 24 24" className="h-5 w-5 text-brand" fill="currentColor" aria-label="Terverifikasi"><path d="m12 2 2.4 1.8 3-.2 1 2.8 2.5 1.6-1 2.9 1 2.9-2.5 1.6-1 2.8-3-.2L12 22l-2.4-1.8-3 .2-1-2.8L3.1 16l1-2.9-1-2.9L5.6 8.6l1-2.8 3 .2z" /><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 text-white" fill="currentColor" aria-label="Terverifikasi"><path d="m12 2 2.4 1.8 3-.2 1 2.8 2.5 1.6-1 2.9 1 2.9-2.5 1.6-1 2.8-3-.2L12 22l-2.4-1.8-3 .2-1-2.8L3.1 16l1-2.9-1-2.9L5.6 8.6l1-2.8 3 .2z" /><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#FF6600" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 )}
               </h1>
-              <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted sm:text-sm">
+              <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-white/85 sm:text-sm">
                 <span className="inline-flex items-center gap-1">
                   <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 22s8-6.2 8-12a8 8 0 1 0-16 0c0 5.8 8 12 8 12z" /><circle cx="12" cy="10" r="2.6" /></svg>
                   {store.location}
                 </span>
-                <span className="text-line">•</span>
-                <span className="text-ok-fg">Aktif {store.joined}</span>
+                <span className="text-white/40">•</span>
+                <span>Aktif {store.joined}</span>
               </p>
-            </div>
-
-            <div className="hidden shrink-0 items-center gap-2 pb-1 sm:flex">
-              <FollowButton />
-              <Link href="/chat" className="inline-flex items-center gap-1.5 rounded-sm border border-line px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand-ontint">
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z" /></svg>
-                Chat
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-sm font-semibold text-brand-ontint">
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z" /></svg>
-              {store.rating.toFixed(1)}
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 text-xs text-muted">
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-brand-ontint" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><path d="M3 6h18M16 10a4 4 0 0 1-8 0" /></svg>
-              {store.itemsSold.toLocaleString("id-ID")} terjual
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 text-xs text-muted">
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-brand-ontint" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
-              {store.categories.length} kategori
-            </span>
-            <div className="flex w-full gap-2 sm:hidden">
-              <FollowButton />
-              <Link href="/chat" className="inline-flex items-center gap-1.5 rounded-sm border border-line px-4 py-1.5 text-sm font-semibold text-ink">
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z" /></svg>
-                Chat
-              </Link>
             </div>
           </div>
         </div>
 
-        <dl className="mt-2 grid grid-cols-2 gap-px border-y border-line bg-line sm:grid-cols-4">
+        <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-3 sm:px-6">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-sm font-semibold text-brand-ontint">
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z" /></svg>
+            {store.rating.toFixed(1)}
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 text-xs text-muted">
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-brand-ontint" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><path d="M3 6h18M16 10a4 4 0 0 1-8 0" /></svg>
+            {store.itemsSold.toLocaleString("id-ID")} terjual
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 text-xs text-muted">
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-brand-ontint" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
+            {store.categories.length} kategori
+          </span>
+          <div className="ml-auto flex items-center gap-2">
+            <FollowButton />
+            <Link href="/chat" className="inline-flex items-center gap-1.5 rounded-sm border border-line px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand-ontint">
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z" /></svg>
+              Chat
+            </Link>
+          </div>
+        </div>
+
+        <dl className="grid grid-cols-2 gap-px border-b border-line bg-line sm:grid-cols-4">
           {stats.map((s) => (
             <div key={s.label} className="flex items-center gap-3 bg-surface px-4 py-4 sm:px-5">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-light text-brand-ontint">
